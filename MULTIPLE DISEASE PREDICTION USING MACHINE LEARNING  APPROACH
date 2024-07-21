@@ -1,0 +1,308 @@
+{"intents": [ 
+{"tag": "greeting", 
+"patterns": ["Hi", "Hey", "Is anyone there?", "Hie”, “Hello", "Hay"], 
+"responses": ["Hello, tell me how can assist you", "HI, tell me your problem to assist you", "Hi 
+there, How can I support you"] 
+}, 
+{"tag": "goodbye", 
+"patterns": ["Bye", "See you later", "Goodbye"], 
+"responses": ["See you later", "Have a nice day", "Bye! Come back again"] 
+}, 
+{"tag": "thanks", 
+"patterns": ["Thanks", "Thank you", "That's helpful", "Thanks for the help"], 
+"responses": ["Happy to help!", "Any time!", "My pleasure", "You're most welcome!"] 
+}, 
+{"tag": "about", 
+"patterns": ["Who are you?", "What are you?", "Who you are?”], 
+"responses": ["I’m Medico, your bot assistant", "I'm Medico, an Artificial Intelligent bot"] 
+}, 
+{"tag": "name", 
+"patterns": ["what is your name", "what should I call you", "what’s your name?"], 
+"responses": ["You can call me Medico.", "I'm Medico!", "Just call me as Medico"] 
+}, 
+{"tag": "help", 
+"patterns": ["Could you help me?", "give me a hand please", "Can you help?", "What can you 
+do for me?", "I need a support", "I need a help", "support me please"], 
+"responses": ["Tell me how can assist you", "Tell me your problem to assist you", "Yes Sure, 
+how can I support you"] 
+}, 
+{"tag": "thanks", 
+"patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping 
+me"], 
+"responses": ["Happy to help!", "Any time!", "My pleasure"],"context": [""] 
+}, 
+{"tag": "liver", 
+"patterns": [ 
+"What are the common risk factors for liver diseases?", 
+"Can you explain how lifestyle choices like diet and alcohol consumption affect liver health?", 
+"How is liver health assessed or tested by healthcare professionals?", 
+"What types of blood tests are typically performed to check liver function?", 
+"What lifestyle changes can help reduce the risk of liver diseases?", 
+"Are there specific foods or supplements that promote liver health?" 
+], 
+"responses": [ 
+"Liver diseases can have various risk factors, including excessive alcohol consumption, viral 
+infections, and obesity.", 
+"Lifestyle choices, such as a high-fat diet and excessive alcohol consumption, can strain the 
+liver and increase the risk of liver diseases.", 
+"Healthcare professionals assess liver health through various tests, including blood tests to 
+check liver enzymes and function.", 
+"Common blood tests for liver function include ALT, AST, and bilirubin levels. An ultrasound 
+or CT scan may also be used to visualize the liver.", 
+"To reduce the risk of liver diseases, maintain a healthy weight, limit alcohol intake, and avoid 
+high-fat diets.", 
+"Certain foods, such as leafy greens, beets, and turmeric, can support liver health. Consult a 
+healthcare professional before taking supplements." 
+], 
+"context": ["risk factors", "testing diagnosis", "general advice"] 
+}, 
+{ 
+"tag": "heart", 
+"patterns": [ 
+"What are the major risk factors for heart diseases, including genetic and lifestyle-related 
+factors?", 
+"How does family history impact the risk of heart problems?","What types of tests can detect heart issues early on?", 
+"How is blood pressure measured and what is the significance of blood pressure in heart 
+health?", 
+"What steps can individuals take to maintain a healthy heart, including diet and exercise 
+recommendations?", 
+"Are there specific warning signs that people should look out for regarding their heart health?" 
+], 
+"responses": [ 
+"Major risk factors for heart diseases include high blood pressure, high cholesterol, smoking, 
+obesity, and a sedentary lifestyle.", 
+"Family history can influence the risk of heart problems. If your family has a history of heart 
+disease, you may have a higher risk.", 
+"Tests for early detection of heart issues include electrocardiograms (ECG or EKG), 
+echocardiograms, and stress tests.", 
+"Blood pressure is measured using a sphygmomanometer. It's a critical indicator of heart 
+health; high blood pressure can strain the heart.", 
+"To maintain a healthy heart, adopt a balanced diet rich in fruits and vegetables, exercise 
+regularly, and quit smoking.", 
+"Common warning signs of heart problems include chest pain, shortness of breath, and 
+irregular heartbeats. Seek medical help if you experience these symptoms." 
+], 
+"context": ["risk factors", "testing diagnosis", "general advice"] 
+}, 
+{ 
+"tag": "diabetes", 
+"patterns": [ 
+"What are the key risk factors for diabetes, both type 1 and type 2?", 
+"How does age affect the risk of developing diabetes?", 
+"What are the standard tests for diagnosing diabetes?", 
+"How can individuals monitor their blood sugar levels at home?", 
+"What dietary guidelines are recommended for individuals at risk of or living with diabetes?", 
+"What are the benefits of regular physical activity in diabetes prevention and management?"], 
+"responses": [ 
+"Key risk factors for diabetes include family history, obesity, sedentary lifestyle, and genetics. 
+Type 1 diabetes is often diagnosed in childhood, while type 2 is more common in adults.", 
+"Age can increase the risk of type 2 diabetes, particularly as people get older. However, type 1 
+diabetes can develop at any age.", 
+"Standard tests for diagnosing diabetes include fasting blood sugar tests, oral glucose tolerance 
+tests (OGTT), and HbA1c tests.", 
+"Individuals can monitor their blood sugar levels at home using glucometers. Regular 
+monitoring is essential for managing diabetes.", 
+"Dietary guidelines for diabetes include controlling carbohydrate intake, choosing complex 
+carbs, and avoiding sugary foods.", 
+"Regular physical activity helps improve insulin sensitivity and manage blood sugar levels in 
+diabetes. It also supports overall health." 
+], 
+"context": ["risk factors", "testing diagnosis", "general advice"] 
+} 
+] 
+} 
+App.multipledisease prediction.html 
+import { useState } from "react" 
+import { useEffect } from "react" 
+import { Card, CardBody, Form, Input, Label, Button, Container } from "reactstrap" 
+import { loadAllCategories } from "./services/category-service" 
+import JoditEditor from "jodit-react" 
+import { useRef } from "react" 
+import { createPost as doCreatePost, uploadPostImage } from "./services/post-service" 
+import { getCurrentUserDetail } from "../auth" 
+import { toast } from "react-toastify" 
+const AddPost = () => { 
+const editor = useRef(null) 
+// const [content,setContent] =useState('')const [categories, setCategories] = useState([]) 
+const [user, setUser] = useState(undefined) 
+const [post, setPost] = useState({ 
+title: '', 
+content: '', 
+categoryId: '' 
+}) 
+const [image, setImage] = useState(null) 
+// const config={ 
+//
+     placeholder:"Start typing...", 
+// } 
+useEffect( 
+() => { 
+setUser(getCurrentUserDetail()) 
+loadAllCategories().then((data) => { 
+console.log(data) 
+setCategories(data) 
+}).catch(error => { 
+console.log(error) 
+}) 
+}, 
+[] 
+) 
+//field changed function 
+const fieldChanged = (event) => { 
+// console.log(event) 
+setPost({ ...post, [event.target.name]: event.target.value }) 
+} 
+const contentFieldChanaged = (data) => { 
+setPost({ ...post, 'content': data }) 
+} 
+//create post function 
+const createPost = (event) => { 
+event.preventDefault();if (post.title.trim() === '') { 
+toast.error("post  title is required !!") 
+return; 
+} 
+if (post.content.trim() === '') { 
+toast.error("post content is required !!") 
+return 
+} 
+if (post.categoryId === '') { 
+toast.error("select some category !!") 
+return; 
+} 
+//submit the form one server 
+post['userId'] = user.id 
+doCreatePost(post).then(data => { 
+uploadPostImage(image,data.postId).then(data=>{ 
+toast.success("Image Uploaded !!") 
+}).catch(error=>{ 
+toast.error("Error in uploading image") 
+console.log(error) 
+}) 
+toast.success("Post Created !!") 
+// console.log(post) 
+setPost({ 
+title: '', 
+content: '', 
+categoryId: '' 
+}) 
+}).catch((error) => { 
+toast.error("Post not created due to some error !!") 
+// console.log(error) 
+}) } 
+//handling file chagne event 
+const handleFileChange=(event)=>{ 
+console.log(event.target.files[0]) 
+setImage(event.target.files[0]) 
+} 
+return ( 
+<div className="wrapper"> 
+<Card className="shadow-sm  border-0 mt-2"> 
+<CardBody> 
+{/* {JSON.stringify(post)} */} 
+<h3>What going in your mind ?</h3> 
+<Form onSubmit={createPost}> 
+<div className="my-3"> 
+<Label for="title" >Post title</Label> 
+<Input 
+type="text" 
+id="title" 
+placeholder="Enter here" 
+className="rounded-0" 
+name="title" 
+onChange={fieldChanged} 
+/> 
+</div> 
+<div className="my-3"> 
+<Label for="content" >Post Content</Label> 
+{/* <Input 
+type="textarea" 
+id="content" 
+placeholder="Enter here" 
+className="rounded-0" 
+style={{ height: '300px' }} 
+/> */}<JoditEditor 
+ref={editor} 
+value={post.content} 
+onChange={(newContent) => contentFieldChanaged(newContent)} 
+/> 
+</div> 
+{/* file field */} 
+<div className="mt-3"> 
+<Label for="image">Select Post banner</Label> 
+<Input id="image" type="file" onChange={handleFileChange} /> 
+</div> 
+<div className="my-3"> 
+<Label for="category" >Post Category</Label> 
+<Input 
+type="select" 
+id="category" 
+placeholder="Enter here" 
+className="rounded-0" 
+name="categoryId" 
+onChange={fieldChanged} 
+defaultValue={0} 
+> 
+<option disabled value={0} >--Select category--</option> 
+{ 
+categories.map((category) => ( 
+<option value={category.categoryId} key={category.categoryId}> 
+{category.categoryTitle} 
+</Input> 
+</div> 
+<Container className="text-center"> 
+<Button type="submit" className="rounded-0" color="primary">Create Post</Button> 
+<Button className="rounded-0 ms-2" color="danger">Reset Content</Button></Container> 
+</Form> 
+</CardBody> 
+</Card> 
+</div> 
+) 
+} 
+export default AddPost 
+html { 
+background: #e6e9e9; 
+background-image: linear-gradient(270deg, rgb(230, 233, 233) 0%, rgb(216, 221, 221) 100%); -webkit-font-smoothing: antialiased; 
+} 
+body { 
+background: #fff; 
+box-shadow: 0 0 2px rgba(0, 0, 0, 0.06); 
+color: #545454; 
+font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+font-size: 16px; 
+line-height: 1.5; 
+margin: 0 auto; 
+max-width: 800px; 
+padding: 2em 2em 4em; 
+} 
+h1, h2, h3, h4, h5, h6 { 
+color: #222; 
+font-weight: 600; 
+line-height: 1.3; 
+} 
+h2 { 
+margin-top: 1.3em; 
+} 
+a { 
+color: #0083e8;} 
+b, strong { 
+font-weight: 600; 
+} 
+samp { 
+display: none; 
+} 
+img { 
+animation: colorize 2s cubic-bezier(0, 0, .78, .36) 1; 
+background: transparent; 
+border: 10px solid rgba(0, 0, 0, 0.12); 
+border-radius: 4px; 
+display: block; 
+margin: 1.3em auto; 
+max-width: 95%; 
+} 
+@keyframes colorize { 
+0% { -webkit-filter: grayscale(100%); 
+filter: grayscale(100%); 
+} 
+100% { -webkit-filter: grayscale(0%); 
+filter: grayscale(0%); 
+} 
